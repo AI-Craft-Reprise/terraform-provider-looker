@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -63,7 +64,8 @@ func resourceGroupMembershipCreate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceGroupMembershipRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	targetGroupID := int64(d.Get("target_group_id").(int))
 
@@ -147,7 +149,8 @@ func resourceGroupMembershipDelete(ctx context.Context, d *schema.ResourceData, 
 }
 
 func addGroupUsers(m interface{}, targetGroupID int64, userIDs []int64) error {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	for _, userID := range userIDs {
 		body := apiclient.GroupIdForGroupUserInclusion{
@@ -164,7 +167,8 @@ func addGroupUsers(m interface{}, targetGroupID int64, userIDs []int64) error {
 }
 
 func addGroupGroups(m interface{}, targetGroupID int64, groupIDs []int64) error {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	for _, groupID := range groupIDs {
 		body := apiclient.GroupIdForGroupInclusion{
@@ -181,7 +185,8 @@ func addGroupGroups(m interface{}, targetGroupID int64, groupIDs []int64) error 
 }
 
 func removeAllUsersFromGroup(m interface{}, groupID int64) error {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	req := apiclient.RequestAllGroupUsers{
 		GroupId: groupID,
 	}
@@ -202,7 +207,8 @@ func removeAllUsersFromGroup(m interface{}, groupID int64) error {
 }
 
 func removeAllGroupsFromGroup(m interface{}, groupID int64) error {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	groups, err := client.AllGroupGroups(groupID, "", nil) // todo: imeplement paging
 	if err != nil {
 		return err

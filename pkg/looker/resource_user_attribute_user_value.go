@@ -38,7 +38,8 @@ func resourceUserAttributeUserValue() *schema.Resource {
 }
 
 func resourceUserAttributeUserValueCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	userID := int64(d.Get("user_id").(int))
 	userAttributeID := int64(d.Get("user_attribute_id").(int))
 	userAttributeValue := d.Get("value").(string)
@@ -62,8 +63,8 @@ func resourceUserAttributeUserValueCreate(ctx context.Context, d *schema.Resourc
 }
 
 func resourceUserAttributeUserValueRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
-
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	userIDString, userAttributeIDString, err := parseTwoPartID(d.Id())
 	if err != nil {
 		return diag.FromErr(err)
@@ -105,7 +106,8 @@ func resourceUserAttributeUserValueRead(ctx context.Context, d *schema.ResourceD
 }
 
 func resourceUserAttributeUserValueUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userIDString, userAttributeIDString, err := parseTwoPartID(d.Id())
 	if err != nil {
@@ -134,7 +136,8 @@ func resourceUserAttributeUserValueUpdate(ctx context.Context, d *schema.Resourc
 }
 
 func resourceUserAttributeUserValueDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userIDString, userAttributeIDString, err := parseTwoPartID(d.Id())
 	if err != nil {

@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -53,7 +54,8 @@ func resourceUserAttribute() *schema.Resource {
 }
 
 func resourceUserAttributeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	userAttributeName := d.Get("name").(string)
 	userAttributeLabel := d.Get("label").(string)
 	userAttributeType := d.Get("type").(string)
@@ -84,7 +86,8 @@ func resourceUserAttributeCreate(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourceUserAttributeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userAttributeID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -122,7 +125,8 @@ func resourceUserAttributeRead(ctx context.Context, d *schema.ResourceData, m in
 }
 
 func resourceUserAttributeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userAttributeID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -156,7 +160,8 @@ func resourceUserAttributeUpdate(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourceUserAttributeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userAttributeID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {

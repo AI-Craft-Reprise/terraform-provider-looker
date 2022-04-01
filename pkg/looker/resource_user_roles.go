@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -34,8 +35,8 @@ func resourceUserRoles() *schema.Resource {
 }
 
 func resourceUserRolesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
-
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	userIDString := d.Get("user_id").(string)
 
 	userID, err := strconv.ParseInt(userIDString, 10, 64)
@@ -63,7 +64,8 @@ func resourceUserRolesCreate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceUserRolesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -95,7 +97,8 @@ func resourceUserRolesRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func resourceUserRolesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -120,7 +123,8 @@ func resourceUserRolesUpdate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceUserRolesDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	userID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {

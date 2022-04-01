@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -37,7 +38,8 @@ func resourceLookMLModel() *schema.Resource {
 }
 
 func resourceLookMLModelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	body, err := expandWriteLookmlModel(d)
 	if err != nil {
@@ -55,7 +57,8 @@ func resourceLookMLModelCreate(ctx context.Context, d *schema.ResourceData, m in
 }
 
 func resourceLookMLModelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	model, err := client.LookmlModel(d.Id(), "", nil)
 	if err != nil {
@@ -70,8 +73,8 @@ func resourceLookMLModelRead(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceLookMLModelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
-
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	body, err := expandWriteLookmlModel(d)
 	if err != nil {
 		return diag.FromErr(err)
@@ -86,7 +89,8 @@ func resourceLookMLModelUpdate(ctx context.Context, d *schema.ResourceData, m in
 }
 
 func resourceLookMLModelDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	_, err := client.DeleteLookmlModel(d.Id(), nil)
 	if err != nil {

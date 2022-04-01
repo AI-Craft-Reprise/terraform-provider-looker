@@ -3,6 +3,7 @@ package looker
 import (
 	"context"
 	"fmt"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -239,7 +240,8 @@ func resourceConnection() *schema.Resource {
 }
 
 func resourceConnectionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	body, err := expandWriteDBConnection(d)
 	if err != nil {
@@ -257,7 +259,8 @@ func resourceConnectionCreate(ctx context.Context, d *schema.ResourceData, m int
 }
 
 func resourceConnectionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	connectionName := d.Id()
 
 	connection, err := client.Connection(connectionName, "", nil)
@@ -273,7 +276,8 @@ func resourceConnectionRead(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func resourceConnectionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	name := d.Id()
 	body, err := expandWriteDBConnection(d)
@@ -290,7 +294,8 @@ func resourceConnectionUpdate(ctx context.Context, d *schema.ResourceData, m int
 }
 
 func resourceConnectionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	connectionName := d.Id()
 

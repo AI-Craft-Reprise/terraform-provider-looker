@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -34,7 +35,8 @@ func resourceModelSet() *schema.Resource {
 }
 
 func resourceModelSetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	modelSetName := d.Get("name").(string)
 
@@ -60,7 +62,8 @@ func resourceModelSetCreate(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func resourceModelSetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	modelSetID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -83,7 +86,8 @@ func resourceModelSetRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceModelSetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	modelSetID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -107,7 +111,8 @@ func resourceModelSetUpdate(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func resourceModelSetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	modelSetID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {

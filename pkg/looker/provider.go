@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/looker-open-source/sdk-codegen/go/rtl"
-	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
 const (
@@ -64,6 +63,10 @@ func Provider() *schema.Provider {
 			"looker_user_attribute_group_value": resourceUserAttributeGroupValue(),
 			"looker_connection":                 resourceConnection(),
 			"looker_lookml_model":               resourceLookMLModel(),
+			"looker_project":                    resourceProject(),
+			"looker_project_git_deploy_key":     resourceProjectGitDeployKey(),
+			"looker_project_git_repo":           resourceProjectGitRepo(),
+			"looker_theme":                      resourceTheme(),
 		},
 
 		ConfigureContextFunc: providerConfigure,
@@ -86,7 +89,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		Timeout:      int32(timeout),
 	}
 	authSession := rtl.NewAuthSession(apiSettings)
-	client := apiclient.NewLookerSDK(authSession)
+	// client := apiclient.NewLookerSDK(authSession)
 
-	return client, diag.Diagnostics{}
+	return authSession, diag.Diagnostics{}
 }

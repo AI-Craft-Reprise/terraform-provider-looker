@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -34,7 +35,8 @@ func resourcePermissionSet() *schema.Resource {
 }
 
 func resourcePermissionSetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	permissionSetName := d.Get("name").(string)
 
@@ -60,7 +62,8 @@ func resourcePermissionSetCreate(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourcePermissionSetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	permissionSetID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -82,7 +85,8 @@ func resourcePermissionSetRead(ctx context.Context, d *schema.ResourceData, m in
 }
 
 func resourcePermissionSetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	permissionSetID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -107,7 +111,8 @@ func resourcePermissionSetUpdate(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourcePermissionSetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	permissionSetID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {

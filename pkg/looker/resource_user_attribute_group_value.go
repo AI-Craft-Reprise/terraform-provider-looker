@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -37,7 +38,8 @@ func resourceUserAttributeGroupValue() *schema.Resource {
 }
 
 func resourceUserAttributeGroupValueCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	groupID := int64(d.Get("group_id").(int))
 	userAttributeID := int64(d.Get("user_attribute_id").(int))
@@ -63,7 +65,8 @@ func resourceUserAttributeGroupValueCreate(ctx context.Context, d *schema.Resour
 }
 
 func resourceUserAttributeGroupValueRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	groupIDString, userAttributeIDString, err := parseTwoPartID(d.Id())
 	if err != nil {
@@ -105,7 +108,8 @@ func resourceUserAttributeGroupValueRead(ctx context.Context, d *schema.Resource
 }
 
 func resourceUserAttributeGroupValueUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	groupIDString, userAttributeIDString, err := parseTwoPartID(d.Id())
 	if err != nil {
@@ -136,7 +140,8 @@ func resourceUserAttributeGroupValueUpdate(ctx context.Context, d *schema.Resour
 }
 
 func resourceUserAttributeGroupValueDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	groupIDString, userAttributeIDString, err := parseTwoPartID(d.Id())
 	if err != nil {

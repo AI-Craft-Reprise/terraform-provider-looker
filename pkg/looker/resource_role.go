@@ -2,6 +2,7 @@ package looker
 
 import (
 	"context"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -37,7 +38,8 @@ func resourceRole() *schema.Resource {
 }
 
 func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	roleName := d.Get("name").(string)
 	permissionSetID := d.Get("permission_set_id").(string)
@@ -69,7 +71,8 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, m interface
 }
 
 func resourceRoleRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	roleID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -97,7 +100,8 @@ func resourceRoleRead(ctx context.Context, d *schema.ResourceData, m interface{}
 }
 
 func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 
 	roleID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
@@ -129,8 +133,8 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, m interface
 }
 
 func resourceRoleDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*apiclient.LookerSDK)
-
+	session := m.(*rtl.AuthSession)
+	client := apiclient.NewLookerSDK(session)
 	roleID, err := strconv.ParseInt(d.Id(), 10, 64)
 	if err != nil {
 		return diag.FromErr(err)
