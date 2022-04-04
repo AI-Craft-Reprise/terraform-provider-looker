@@ -2,11 +2,9 @@ package looker
 
 import (
 	"context"
-	"github.com/looker-open-source/sdk-codegen/go/rtl"
-	"strconv"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
@@ -22,11 +20,11 @@ func resourceUserAttributeGroupValue() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"user_attribute_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Required: true,
 			},
 			"group_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Required: true,
 			},
 			"value": {
@@ -41,8 +39,8 @@ func resourceUserAttributeGroupValueCreate(ctx context.Context, d *schema.Resour
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	groupID := int64(d.Get("group_id").(int))
-	userAttributeID := int64(d.Get("user_attribute_id").(int))
+	groupID := d.Get("group_id").(string)
+	userAttributeID := d.Get("user_attribute_id").(string)
 	value := d.Get("value").(string)
 
 	body := apiclient.UserAttributeGroupValue{
@@ -55,9 +53,7 @@ func resourceUserAttributeGroupValueCreate(ctx context.Context, d *schema.Resour
 		return diag.FromErr(err)
 	}
 
-	groupIDString := strconv.Itoa(int(*userAttributeGroupValue.GroupId))
-	userAttributeIDString := strconv.Itoa(int(*userAttributeGroupValue.UserAttributeId))
-	id := buildTwoPartID(&groupIDString, &userAttributeIDString)
+	id := buildTwoPartID(userAttributeGroupValue.GroupId, userAttributeGroupValue.UserAttributeId)
 
 	d.SetId(id)
 
@@ -72,23 +68,15 @@ func resourceUserAttributeGroupValueRead(ctx context.Context, d *schema.Resource
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	groupID, err := strconv.ParseInt(groupIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
-	userAttributeGroupValues, err := client.AllUserAttributeGroupValues(userAttributeID, "", nil)
+	userAttributeGroupValues, err := client.AllUserAttributeGroupValues(userAttributeIDString, "", nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	var userAttributeGroupValue apiclient.UserAttributeGroupValue
 	for _, groupValue := range userAttributeGroupValues {
-		if *groupValue.GroupId == groupID {
+		if *groupValue.GroupId == groupIDString {
 			userAttributeGroupValue = groupValue
 			break
 		}
@@ -115,23 +103,15 @@ func resourceUserAttributeGroupValueUpdate(ctx context.Context, d *schema.Resour
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	groupID, err := strconv.ParseInt(groupIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
 	value := d.Get("value").(string)
 
 	body := apiclient.UserAttributeGroupValue{
-		GroupId:         &groupID,
-		UserAttributeId: &userAttributeID,
+		GroupId:         &groupIDString,
+		UserAttributeId: &userAttributeIDString,
 		Value:           &value,
 	}
-	_, err = client.UpdateUserAttributeGroupValue(groupID, userAttributeID, body, nil)
+	_, err = client.UpdateUserAttributeGroupValue(groupIDString, userAttributeIDString, body, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -147,16 +127,8 @@ func resourceUserAttributeGroupValueDelete(ctx context.Context, d *schema.Resour
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	groupID, err := strconv.ParseInt(groupIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
-	err = client.DeleteUserAttributeGroupValue(groupID, userAttributeID, nil)
+	err = client.DeleteUserAttributeGroupValue(groupIDString, userAttributeIDString, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

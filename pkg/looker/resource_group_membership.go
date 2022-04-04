@@ -2,11 +2,9 @@ package looker
 
 import (
 	"context"
-	"github.com/looker-open-source/sdk-codegen/go/rtl"
-	"strconv"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
@@ -22,19 +20,19 @@ func resourceGroupMembership() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"target_group_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Required: true,
 			},
 			"user_ids": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Set:      schema.HashInt,
 			},
 			"group_ids": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Set:      schema.HashInt,
 			},
 		},
@@ -42,7 +40,7 @@ func resourceGroupMembership() *schema.Resource {
 }
 
 func resourceGroupMembershipCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	targetGroupID := int64(d.Get("target_group_id").(int))
+	targetGroupID := d.Get("target_group_id").(string)
 
 	// add users
 	userIDs := expandInt64ListFromSet(d.Get("user_ids"))
@@ -58,7 +56,7 @@ func resourceGroupMembershipCreate(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
-	d.SetId(strconv.Itoa(int(targetGroupID)))
+	d.SetId(targetGroupID)
 
 	return resourceGroupMembershipRead(ctx, d, m)
 }
@@ -67,7 +65,7 @@ func resourceGroupMembershipRead(ctx context.Context, d *schema.ResourceData, m 
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	targetGroupID := int64(d.Get("target_group_id").(int))
+	targetGroupID := d.Get("target_group_id").(string)
 
 	req := apiclient.RequestAllGroupUsers{
 		GroupId: targetGroupID,
@@ -83,7 +81,7 @@ func resourceGroupMembershipRead(ctx context.Context, d *schema.ResourceData, m 
 		return diag.FromErr(err)
 	}
 
-	if err = d.Set("target_group_id", int(targetGroupID)); err != nil {
+	if err = d.Set("target_group_id", targetGroupID); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -99,12 +97,9 @@ func resourceGroupMembershipRead(ctx context.Context, d *schema.ResourceData, m 
 }
 
 func resourceGroupMembershipUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	targetGroupID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	targetGroupID := d.Id()
 
-	err = removeAllUsersFromGroup(m, targetGroupID)
+	err := removeAllUsersFromGroup(m, targetGroupID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -130,12 +125,9 @@ func resourceGroupMembershipUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceGroupMembershipDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	targetGroupID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	targetGroupID := d.Id()
 
-	err = removeAllUsersFromGroup(m, targetGroupID)
+	err := removeAllUsersFromGroup(m, targetGroupID)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -148,7 +140,7 @@ func resourceGroupMembershipDelete(ctx context.Context, d *schema.ResourceData, 
 	return resourceGroupMembershipRead(ctx, d, m)
 }
 
-func addGroupUsers(m interface{}, targetGroupID int64, userIDs []int64) error {
+func addGroupUsers(m interface{}, targetGroupID string, userIDs []string) error {
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
@@ -166,7 +158,7 @@ func addGroupUsers(m interface{}, targetGroupID int64, userIDs []int64) error {
 	return nil
 }
 
-func addGroupGroups(m interface{}, targetGroupID int64, groupIDs []int64) error {
+func addGroupGroups(m interface{}, targetGroupID string, groupIDs []string) error {
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
@@ -184,7 +176,7 @@ func addGroupGroups(m interface{}, targetGroupID int64, groupIDs []int64) error 
 	return nil
 }
 
-func removeAllUsersFromGroup(m interface{}, groupID int64) error {
+func removeAllUsersFromGroup(m interface{}, groupID string) error {
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 	req := apiclient.RequestAllGroupUsers{
@@ -206,7 +198,7 @@ func removeAllUsersFromGroup(m interface{}, groupID int64) error {
 	return nil
 }
 
-func removeAllGroupsFromGroup(m interface{}, groupID int64) error {
+func removeAllGroupsFromGroup(m interface{}, groupID string) error {
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 	groups, err := client.AllGroupGroups(groupID, "", nil) // todo: imeplement paging
@@ -224,18 +216,18 @@ func removeAllGroupsFromGroup(m interface{}, groupID int64) error {
 	return nil
 }
 
-func flattenUserIDs(users []apiclient.User) []int {
-	userIDs := make([]int, 0, len(users))
+func flattenUserIDs(users []apiclient.User) []string {
+	userIDs := make([]string, 0, len(users))
 	for _, user := range users {
-		userIDs = append(userIDs, int(*user.Id))
+		userIDs = append(userIDs, *user.Id)
 	}
 	return userIDs
 }
 
-func flattenGroupIDs(groups []apiclient.Group) []int {
-	groupIDs := make([]int, 0, len(groups))
+func flattenGroupIDs(groups []apiclient.Group) []string {
+	groupIDs := make([]string, 0, len(groups))
 	for _, group := range groups {
-		groupIDs = append(groupIDs, int(*group.Id))
+		groupIDs = append(groupIDs, *group.Id)
 	}
 	return groupIDs
 }

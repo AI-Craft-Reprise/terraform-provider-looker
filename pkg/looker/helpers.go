@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v3"
+	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
 var (

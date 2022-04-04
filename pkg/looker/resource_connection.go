@@ -36,7 +36,7 @@ func resourceConnection() *schema.Resource {
 				Required: true,
 			},
 			"port": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"username": {
@@ -232,7 +232,7 @@ func resourceConnection() *schema.Resource {
 				},
 			},
 			"oauth_application_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 		},
@@ -331,7 +331,7 @@ func expandWriteDBConnection(d *schema.ResourceData) (*apiclient.WriteDBConnecti
 
 	// optional values
 	if v, ok := d.GetOk("port"); ok {
-		port := int64(v.(int))
+		port := v.(string)
 		writeDBConnection.Port = &port
 	}
 	if v, ok := d.GetOk("password"); ok {
@@ -420,7 +420,7 @@ func expandWriteDBConnection(d *schema.ResourceData) (*apiclient.WriteDBConnecti
 		writeDBConnection.DisableContextComment = &disable_context_comment
 	}
 	if v, ok := d.GetOk("oauth_application_id"); ok {
-		oauthApplicationId := int64(v.(int))
+		oauthApplicationId := v.(string)
 		writeDBConnection.OauthApplicationId = &oauthApplicationId
 	}
 

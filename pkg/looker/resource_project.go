@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v3"
+	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
 func resourceProject() *schema.Resource {

@@ -2,11 +2,9 @@ package looker
 
 import (
 	"context"
-	"github.com/looker-open-source/sdk-codegen/go/rtl"
-	"strconv"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/looker-open-source/sdk-codegen/go/rtl"
 	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
@@ -56,7 +54,7 @@ func resourceModelSetCreate(ctx context.Context, d *schema.ResourceData, m inter
 	}
 
 	modelSetID := *modelSet.Id
-	d.SetId(strconv.Itoa(int(modelSetID)))
+	d.SetId(modelSetID)
 
 	return resourceModelSetRead(ctx, d, m)
 }
@@ -65,10 +63,7 @@ func resourceModelSetRead(ctx context.Context, d *schema.ResourceData, m interfa
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	modelSetID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	modelSetID := d.Id()
 
 	modelSet, err := client.ModelSet(modelSetID, "", nil)
 	if err != nil {
@@ -89,10 +84,8 @@ func resourceModelSetUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	modelSetID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	modelSetID := d.Id()
+
 	modelSetName := d.Get("name").(string)
 	var modelNames []string
 	for _, modelName := range d.Get("models").(*schema.Set).List() {
@@ -102,7 +95,7 @@ func resourceModelSetUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		Name:   &modelSetName,
 		Models: &modelNames,
 	}
-	_, err = client.UpdateModelSet(modelSetID, writeModelSet, nil)
+	_, err := client.UpdateModelSet(modelSetID, writeModelSet, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -114,12 +107,9 @@ func resourceModelSetDelete(ctx context.Context, d *schema.ResourceData, m inter
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	modelSetID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	modelSetID := d.Id()
 
-	_, err = client.DeleteModelSet(modelSetID, nil)
+	_, err := client.DeleteModelSet(modelSetID, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

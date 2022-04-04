@@ -3,7 +3,6 @@ package looker
 import (
 	"context"
 	"github.com/looker-open-source/sdk-codegen/go/rtl"
-	"strconv"
 	"strings"
 	"time"
 
@@ -71,7 +70,7 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 	}
 
 	userID := *user.Id
-	d.SetId(strconv.Itoa(int(userID)))
+	d.SetId(userID)
 
 	writeCredentialsEmail := apiclient.WriteCredentialsEmail{
 		Email: &email,
@@ -92,10 +91,7 @@ func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	userID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	userID := d.Id()
 
 	user, err := client.User(userID, "", nil)
 	if err != nil {
@@ -119,10 +115,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
 
-	userID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	userID := d.Id()
 
 	if d.HasChanges("first_name", "last_name") {
 		firstName := d.Get("first_name").(string)
@@ -131,7 +124,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 			FirstName: &firstName,
 			LastName:  &lastName,
 		}
-		_, err = client.UpdateUser(userID, writeUser, "", nil)
+		_, err := client.UpdateUser(userID, writeUser, "", nil)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -142,7 +135,7 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 		writeCredentialsEmail := apiclient.WriteCredentialsEmail{
 			Email: &email,
 		}
-		_, err = client.UpdateUserCredentialsEmail(userID, writeCredentialsEmail, "", nil)
+		_, err := client.UpdateUserCredentialsEmail(userID, writeCredentialsEmail, "", nil)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -154,12 +147,9 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 func resourceUserDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
-	userID, err := strconv.ParseInt(d.Id(), 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	userID := d.Id()
 
-	_, err = client.DeleteUser(userID, nil)
+	_, err := client.DeleteUser(userID, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

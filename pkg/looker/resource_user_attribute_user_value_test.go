@@ -2,7 +2,6 @@ package looker
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -65,19 +64,9 @@ func testAccCheckUserAttributeUserValueExists(n string) resource.TestCheckFunc {
 			return err
 		}
 
-		userID, err := strconv.ParseInt(userIDString, 10, 64)
-		if err != nil {
-			return err
-		}
-
-		userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-		if err != nil {
-			return err
-		}
-
-		userAttributeIDs := rtl.DelimInt64{userAttributeID}
+		userAttributeIDs := rtl.DelimString{userAttributeIDString}
 		request := apiclient.RequestUserAttributeUserValues{
-			UserId:           userID,
+			UserId:           userIDString,
 			UserAttributeIds: &userAttributeIDs,
 		}
 
@@ -103,19 +92,9 @@ func testAccCheckUserAttributeUserValueDestroy(s *terraform.State) error {
 			return err
 		}
 
-		userID, err := strconv.ParseInt(userIDString, 10, 64)
-		if err != nil {
-			return err
-		}
-
-		userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-		if err != nil {
-			return err
-		}
-
-		userAttributeIDs := rtl.DelimInt64{userAttributeID}
+		userAttributeIDs := rtl.DelimString{userAttributeIDString}
 		request := apiclient.RequestUserAttributeUserValues{
-			UserId:           userID,
+			UserId:           userIDString,
 			UserAttributeIds: &userAttributeIDs,
 		}
 

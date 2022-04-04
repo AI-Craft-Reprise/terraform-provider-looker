@@ -2,8 +2,6 @@ package looker
 
 import (
 	"context"
-	"strconv"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/looker-open-source/sdk-codegen/go/rtl"
@@ -22,11 +20,11 @@ func resourceUserAttributeUserValue() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"user_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Required: true,
 			},
 			"user_attribute_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Required: true,
 			},
 			"value": {
@@ -40,8 +38,8 @@ func resourceUserAttributeUserValue() *schema.Resource {
 func resourceUserAttributeUserValueCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	session := m.(*rtl.AuthSession)
 	client := apiclient.NewLookerSDK(session)
-	userID := int64(d.Get("user_id").(int))
-	userAttributeID := int64(d.Get("user_attribute_id").(int))
+	userID := d.Get("user_id").(string)
+	userAttributeID := d.Get("user_attribute_id").(string)
 	userAttributeValue := d.Get("value").(string)
 
 	body := apiclient.WriteUserAttributeWithValue{
@@ -53,8 +51,8 @@ func resourceUserAttributeUserValueCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
-	userIDString := strconv.Itoa(int(*userAttributeWithValue.UserId))
-	userAttributeIDString := strconv.Itoa(int(*userAttributeWithValue.UserAttributeId))
+	userIDString := *userAttributeWithValue.UserId
+	userAttributeIDString := *userAttributeWithValue.UserAttributeId
 	id := buildTwoPartID(&userIDString, &userAttributeIDString)
 
 	d.SetId(id)
@@ -69,18 +67,10 @@ func resourceUserAttributeUserValueRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	userID, err := strconv.ParseInt(userIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
-	userAttributeIDs := rtl.DelimInt64{userAttributeID}
+	userAttributeIDs := rtl.DelimString{userAttributeIDString}
 	request := apiclient.RequestUserAttributeUserValues{
-		UserId:           userID,
+		UserId:           userIDString,
 		UserAttributeIds: &userAttributeIDs,
 	}
 
@@ -113,21 +103,13 @@ func resourceUserAttributeUserValueUpdate(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	userID, err := strconv.ParseInt(userIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
 	userAttributeValue := d.Get("value").(string)
 	body := apiclient.WriteUserAttributeWithValue{
 		Value: &userAttributeValue,
 	}
 
-	_, err = client.SetUserAttributeUserValue(userID, userAttributeID, body, nil)
+	_, err = client.SetUserAttributeUserValue(userIDString, userAttributeIDString, body, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -143,21 +125,13 @@ func resourceUserAttributeUserValueDelete(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	userID, err := strconv.ParseInt(userIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	userAttributeID, err := strconv.ParseInt(userAttributeIDString, 10, 64)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
 	body := apiclient.WriteUserAttributeWithValue{
 		Value: nil,
 	}
 
 	// fill the target value null
-	_, err = client.SetUserAttributeUserValue(userID, userAttributeID, body, nil)
+	_, err = client.SetUserAttributeUserValue(userIDString, userAttributeIDString, body, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

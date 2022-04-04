@@ -2,11 +2,10 @@ package looker
 
 import (
 	"github.com/looker-open-source/sdk-codegen/go/rtl"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v3"
+	apiclient "github.com/looker-open-source/sdk-codegen/go/sdk/v4"
 )
 
 func resourceTheme() *schema.Resource {
@@ -155,7 +154,7 @@ func resourceThemeCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	d.SetId(strconv.Itoa(int(*theme.Id)))
+	d.SetId(*theme.Id)
 
 	return resourceThemeRead(d, m)
 }
@@ -280,12 +279,9 @@ func resourceThemeRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	themeID, err := strconv.Atoi(d.Id())
-	if err != nil {
-		return err
-	}
+	themeID := d.Id()
 
-	if err = d.Set("default", int(*defaultTheme.Id) == themeID); err != nil {
+	if err = d.Set("default", *defaultTheme.Id == themeID); err != nil {
 		return err
 	}
 
