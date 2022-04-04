@@ -126,12 +126,7 @@ func resourceUserAttributeUserValueDelete(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
-	body := apiclient.WriteUserAttributeWithValue{
-		Value: nil,
-	}
-
-	// fill the target value null
-	_, err = client.SetUserAttributeUserValue(userIDString, userAttributeIDString, body, nil)
+	err = client.DeleteUserAttributeUserValue(userIDString, userAttributeIDString, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
