@@ -27,13 +27,13 @@ func resourceGroupMembership() *schema.Resource {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Set:      schema.HashInt,
+				Set:      schema.HashString,
 			},
 			"group_ids": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Set:      schema.HashInt,
+				Set:      schema.HashString,
 			},
 		},
 	}
